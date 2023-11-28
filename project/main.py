@@ -13,8 +13,8 @@ api = None
 celery = None
 cache=None
 
-import logging
-logging.basicConfig(filename='debug.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+# import logging
+# logging.basicConfig(filename='debug.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 def create_app():
     app = Flask(__name__, template_folder="templates")
@@ -104,4 +104,5 @@ def not_authorized(e):
 
 if __name__ == "__main__":
     # Run the Flask app
+    db.create_all()
     app.run(host='0.0.0.0', port=8080)
