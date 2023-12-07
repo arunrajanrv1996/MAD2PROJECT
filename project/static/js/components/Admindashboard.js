@@ -1,5 +1,5 @@
 import venshow from "./venueshow.js";
-const Admindashboard = Vue.component("Admindashboard",{
+const Admindashboard = Vue.component("Admindashboard", {
   template: `
     <div>
     <div v-if="showmsgg">
@@ -191,12 +191,12 @@ const Admindashboard = Vue.component("Admindashboard",{
     return {
       venue: [],
       venshow: false,
-      showForm: false, 
-      exporting:false,
-      showmsg:false,
-      ermsg:"",
-      showmsgg:false,
-      ermsg:"",
+      showForm: false,
+      exporting: false,
+      showmsg: false,
+      ermsg: "",
+      showmsgg: false,
+      ermsg: "",
       showUpdateForm: false,
       venue_id: null,
       venue_name: "",
@@ -215,77 +215,71 @@ const Admindashboard = Vue.component("Admindashboard",{
     this.fetchVenueData();
   },
   methods: {
-    exportt(vid){
-      const token=localStorage.getItem('auth_token');
-      fetch(`http://127.0.0.1:8080/export/${vid}`,{
+    exportt(vid) {
+      const token = localStorage.getItem("auth_token");
+      fetch(`http://127.0.0.1:8080/export/${vid}`, {
         method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authentication-Token":token
-          },})
-          .then((response)=>{
-            if(response.ok){
-              this.exporting=true;
-              setTimeout(() => {
-                this.exporting = false;
-              }, 3000);
-            }
-              
-          })
-          .catch((err)=>{
-            console.log(err)
-          })
-
+        headers: {
+          "Content-Type": "application/json",
+          "Authentication-Token": token,
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            this.exporting = true;
+            setTimeout(() => {
+              this.exporting = false;
+            }, 3000);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     toggleShowForm() {
       this.showForm = !this.showForm;
     },
     fetchVenueData() {
-      const token=localStorage.getItem('auth_token');
-      fetch(`http://127.0.0.1:8080/api/venue`,{
+      const token = localStorage.getItem("auth_token");
+      fetch(`http://127.0.0.1:8080/api/venue`, {
         method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authentication-Token":token
-          },})
-        .then((response) =>{
-          if(response.ok){
-            return response.json()
-          }
-          else if(response.status===401){
+        headers: {
+          "Content-Type": "application/json",
+          "Authentication-Token": token,
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else if (response.status === 401) {
             throw new Error("Not Authorised!!!");
-          }
-          else{
-            throw new Error("venue data is not present");
           }
         })
         .then((data) => {
           this.venue = data;
         })
         .catch((err) => {
-          this.showmsgg=true;
-          this.ermsgg=err.toString().slice(7);
+          this.showmsgg = true;
+          this.ermsgg = err.toString().slice(7);
           console.error(err);
         });
     },
     createVenue() {
-      const token=localStorage.getItem('auth_token');
+      const token = localStorage.getItem("auth_token");
       fetch(`http://127.0.0.1:8080/api/venue/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authentication-Token":token
+          "Authentication-Token": token,
         },
         body: JSON.stringify(this.formData),
       })
-        .then((response) =>{
-          if(response.ok){
-            return response.json()
-          }
-          else if(response.status===409){
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else if (response.status === 409) {
             throw new Error("venue exist already!!!");
-          }         
-          else{
+          } else {
             throw new Error("venue not created!!!");
           }
         })
@@ -294,76 +288,77 @@ const Admindashboard = Vue.component("Admindashboard",{
           this.showForm = false;
         })
         .catch((err) => {
-          this.showmsg=true;
-          this.ermsg=err.toString().slice(7);
-          setTimeout(()=>{
-            this.showmsg=false;
-            this.ermsg="";
-          },3000)
+          this.showmsg = true;
+          this.ermsg = err.toString().slice(7);
+          setTimeout(() => {
+            this.showmsg = false;
+            this.ermsg = "";
+          }, 3000);
           console.error(err);
         });
     },
     editVenue(venue) {
       this.showUpdateForm = !this.showUpdateForm;
       if (this.showUpdateForm) {
-        this.selectedVenue = { ...venue }; 
+        this.selectedVenue = { ...venue };
       } else {
         this.selectedVenue = {};
       }
     },
     updateVenue() {
-      const confirmUpdate = window.confirm("Are you sure you want to update this venue?");
+      const confirmUpdate = window.confirm(
+        "Are you sure you want to update this venue?"
+      );
       if (!confirmUpdate) return;
-      
-      const token = localStorage.getItem('auth_token');
-      
+
+      const token = localStorage.getItem("auth_token");
+
       fetch(`http://127.0.0.1:8080/api/venue/${this.selectedVenue.venue_id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authentication-Token": token
+          "Authentication-Token": token,
         },
         body: JSON.stringify(this.selectedVenue),
       })
-      .then((response) => {
-        if(response.ok){
-          return response.json()
-        }
-        else if(response.status===409){
-          throw new Error("venue exist already!!!");
-        }          
-        else{
-          throw new Error("venue not updated!!!");
-        }
-      })
-      .then((data) => {
-        return this.fetchVenueData();
-      })
-      .then(() => {
-        this.showUpdateForm = false;
-      })
-      .catch((err) => {
-        this.showmsg=true;
-        this.ermsg=err.toString().slice(7);
-        setTimeout(()=>{
-          this.showmsg=false;
-          this.ermsg="";
-        },3000)
-        console.error(err);
-      });
-    },    
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else if (response.status === 409) {
+            throw new Error("venue exist already!!!");
+          } else {
+            throw new Error("venue not updated!!!");
+          }
+        })
+        .then((data) => {
+          return this.fetchVenueData();
+        })
+        .then(() => {
+          this.showUpdateForm = false;
+        })
+        .catch((err) => {
+          this.showmsg = true;
+          this.ermsg = err.toString().slice(7);
+          setTimeout(() => {
+            this.showmsg = false;
+            this.ermsg = "";
+          }, 3000);
+          console.error(err);
+        });
+    },
     deleteVenue(venueId) {
       const confirmDelete = window.confirm(
         "Are you sure you want to delete this show?"
       );
       if (confirmDelete) {
-        const token=localStorage.getItem('auth_token');
-        fetch(`http://127.0.0.1:8080/api/venue/${venueId}`,{
+        const token = localStorage.getItem("auth_token");
+        fetch(`http://127.0.0.1:8080/api/venue/${venueId}`, {
           method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              "Authentication-Token":token
-            },})
+          headers: {
+            "Content-Type": "application/json",
+            "Authentication-Token": token,
+          },
+        })
           .then((response) => {
             if (response.ok) {
               return response.json();
@@ -372,33 +367,29 @@ const Admindashboard = Vue.component("Admindashboard",{
             }
           })
           .then((data) => {
-            this.showmsg=true;
-            this.ermsg=data.toString().slice(7);
-            setTimeout(()=>{
-              this.showmsg=false;
-              this.ermsg="";
-            },3000);
+            this.showmsg = true;
+            this.ermsg = data.toString().slice(7);
+            setTimeout(() => {
+              this.showmsg = false;
+              this.ermsg = "";
+            }, 3000);
             this.fetchVenueData();
           })
           .catch((err) => {
-            this.showmsg=true;
-            this.ermsg=err.toString().slice(7);
-            setTimeout(()=>{
-              this.showmsg=false;
-              this.ermsg="";
-            },3000);
+            this.showmsg = true;
+            this.ermsg = err.toString().slice(7);
+            setTimeout(() => {
+              this.showmsg = false;
+              this.ermsg = "";
+            }, 3000);
           });
       }
     },
     venueshow(venueId, vname, place, loc) {
       this.$router.push({
         name: "VenueShow",
-        params: { venueId: venueId,
-                  vname:vname,
-                place:place,
-              loc:loc },
-      })
-     
+        params: { venueId: venueId, vname: vname, place: place, loc: loc },
+      });
     },
   },
 });
